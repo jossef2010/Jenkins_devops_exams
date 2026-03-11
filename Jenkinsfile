@@ -33,16 +33,20 @@ pipeline {
                 script {
                     try {
                         sh '''
-                            echo "=== Starting docker-compose ==="
-                            docker-compose -f docker-compose.yml up -d
-                            echo "=== Waiting for services ==="
-                            sleep 20
-                            echo "=== Testing Movie Service ==="
-                            curl -f http://localhost:8080/api/v1/movies/docs || exit 1
-                            echo "=== Testing Cast Service ==="
-                            curl -f http://localhost:8080/api/v1/casts/docs || exit 1
-                            echo "=== All tests passed! ==="
-                        '''
+                    	    echo "=== Starting docker-compose without Nginx ==="
+                    	    docker-compose -f docker-compose.yml up -d
+                    
+                    	    echo "=== Waiting for services to be ready (20 seconds) ==="
+                    	    sleep 20
+                    
+                    	    echo "=== Testing Movie Service directly (port 8001) ==="
+                    	    curl -f --retry 5 --retry-delay 5 http://localhost:8001/docs || exit 1
+                    
+                    	    echo "=== Testing Cast Service directly (port 8002) ==="
+                    	    curl -f --retry 5 --retry-delay 5 http://localhost:8002/docs || exit 1
+                    
+                   	    echo "=== All tests passed! ==="
+                        '''               
                     } finally {
                         sh 'docker-compose -f docker-compose.yml down'
                     }
