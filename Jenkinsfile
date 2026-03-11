@@ -38,13 +38,17 @@ pipeline {
                     
                     	    echo "=== Waiting for services to be ready (20 seconds) ==="
                     	    sleep 20
+
+                            echo "=== Listing all running containers ==="
+                            docker ps
                     
-                    	    echo "=== Testing Movie Service directly (port 8001) ==="
-                    	    curl -f --retry 5 --retry-delay 5 http://localhost:8001/docs || exit 1
+                            echo "=== Testing Movie Service via container name ==="
+                            docker exec movie-cast-multibranch_develop-movie_service-1 curl -f http://localhost:8000/docs || exit 1
                     
-                    	    echo "=== Testing Cast Service directly (port 8002) ==="
-                    	    curl -f --retry 5 --retry-delay 5 http://localhost:8002/docs || exit 1
+                            echo "=== Testing Cast Service via container name ==="
+                            docker exec movie-cast-multibranch_develop-cast_service-1 curl -f http://localhost:8000/docs || exit 1
                     
+                    	    
                    	    echo "=== All tests passed! ==="
                         '''               
                     } finally {
