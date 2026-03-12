@@ -9,6 +9,14 @@ services:
       - DATABASE_URL=postgresql://movie_user:movie_password@movie_db:5432/movie_db
     depends_on:
       - movie_db
+    restart: on-failure  # Wichtig: Neustart bei Fehler
+    command: >
+        sh -c "while ! nc -z movie_db 5432; do 
+             echo 'Waiting for movie_db...'; 
+             sleep 1; 
+           done; 
+           echo 'movie_db is ready!'; 
+           uvicorn app.main:app --host 0.0.0.0 --port 8000"
 
   cast_service:
     build: ./cast-service
@@ -18,6 +26,14 @@ services:
       - DATABASE_URL=postgresql://cast_user:cast_password@cast_db:5432/cast_db
     depends_on:
       - cast_db
+    restart: on-failure
+    command: >
+      sh -c "while ! nc -z cast_db 5432; do 
+             echo 'Waiting for cast_db...'; 
+             sleep 1; 
+           done; 
+           echo 'cast_db is ready!'; 
+           uvicorn app.main:app --host 0.0.0.0 --port 8000"
 
   movie_db:
     image: postgres:12.1-alpine
