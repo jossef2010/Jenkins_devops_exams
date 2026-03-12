@@ -1,7 +1,7 @@
 FROM python:3.8-slim
 
 # netcat installieren für Datenbank-Warteschleife
-RUN apt-get update && apt-get install -y netcat-openbsd && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y netcat-traditional curl && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
