@@ -37,22 +37,22 @@ pipeline {
                     	    docker-compose -f docker-compose.yml up -d
                     
                     	    echo "=== Waiting for services to be ready (20 seconds) ==="
-                    	    sleep 20
+                    	    sleep 30
 
-                            echo "=== Listing all running containers ==="
-                            docker ps
+                            echo "=== Checking container status ==="
+                            docker-compose -f docker-compose.yml ps
                     
-                            echo "=== Testing Movie Service via container name ==="
-                            docker exec movie-cast-multibranch_develop-movie_service-1 curl -f http://localhost:8000/docs || exit 1
+                            echo "=== Testing Movie Service ==="
+                            docker-compose -f docker-compose.yml exec -T movie_service curl -f http://localhost:8000/docs || exit 1
                     
-                            echo "=== Testing Cast Service via container name ==="
-                            docker exec movie-cast-multibranch_develop-cast_service-1 curl -f http://localhost:8000/docs || exit 1
+                            echo "=== Testing Cast Service ==="
+                            docker-compose -f docker-compose.yml exec -T cast_service curl -f http://localhost:8000/docs || exit 1                    
                     
                     	    
                    	    echo "=== All tests passed! ==="
                         '''               
                     } finally {
-                        sh 'docker-compose -f docker-compose.yml down'
+                        sh 'docker-compose -f docker-compose.yml down || true'
                     }
                 }
             }
